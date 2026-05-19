@@ -1,7 +1,16 @@
 import axios from 'axios'
 
+const getBaseURL = () => {
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname === 'sigemu.xpertiaplus.com') {
+      return 'https://api.sigemu.xpertiaplus.com/api';
+    }
+  }
+  return (import.meta.env.VITE_API_URL as string) || 'http://localhost:8000/api';
+};
+
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api',
+  baseURL: getBaseURL(),
   headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
 })
 

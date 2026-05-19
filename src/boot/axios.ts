@@ -15,8 +15,17 @@ declare module '@vue/runtime-core' {
 // good idea to move this instance creation inside of the
 // "export default () => {}" function below (which runs individually
 // for each client)
+const getBaseURL = () => {
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname === 'sigemu.xpertiaplus.com') {
+      return 'https://api.sigemu.xpertiaplus.com/api';
+    }
+  }
+  return (import.meta.env.VITE_API_URL as string) || 'http://localhost:8000/api';
+};
+
 const api = axios.create({
-  baseURL: (import.meta.env.VITE_API_URL as string) || 'http://localhost:8000/api',
+  baseURL: getBaseURL(),
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
