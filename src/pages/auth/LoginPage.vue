@@ -2,7 +2,7 @@
   <q-page class="login-layout row">
     
     <!-- LADO IZQUIERDO: Branding Animado Espectacular -->
-    <div class="col-12 col-md-6 flex flex-center branding-panel relative-position overflow-hidden">
+    <div class="col-12 col-md-6 flex flex-center branding-panel relative-position overflow-hidden gt-sm">
       <!-- Formas de Luz Abstractas y Animadas -->
       <div class="shape shape-1"></div>
       <div class="shape shape-2"></div>
@@ -131,14 +131,12 @@ async function ingresar() {
 <style scoped>
 .login-layout {
   background: #fff;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
 }
 
 /* ═══ LADO IZQUIERDO: Branding animado ═══ */
 .branding-panel {
   background: linear-gradient(135deg, #120a26 0%, #2b1654 50%, #101c54 100%);
-  height: 100vh;
 }
 
 /* Formas Abstractas Animadas de fondo */
@@ -234,9 +232,8 @@ async function ingresar() {
 
 /* ═══ LADO DERECHO: Formulario ═══ */
 .form-panel {
-  height: 100vh;
+  min-height: 100vh;
   position: relative;
-  overflow-y: auto; /* Permite scroll solo en el formulario si la pantalla es muy chica */
 }
 
 /* Texto Degradado Animado (Formulario) */
@@ -322,35 +319,25 @@ async function ingresar() {
   text-decoration: underline; 
 }
 
-/* ═══ RESPONSIVE ═══ */
-@media (max-width: 1023px) {
+.text-center-sm {
+  text-align: center;
+}
+
+/* ═══ DESKTOP ADJUSTMENTS ═══ */
+@media (min-width: 1024px) {
   .login-layout {
-    height: auto;
-    overflow: auto;
+    height: 100vh;
+    overflow: hidden;
   }
   .branding-panel {
-    height: auto;
-    min-height: 45vh;
-    padding: 60px 20px;
+    height: 100vh;
   }
   .form-panel {
-    height: auto;
-    min-height: 55vh;
-    border-radius: 40px 40px 0 0;
-    margin-top: -40px;
-    z-index: 10;
-    background: #fff;
-    box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
-  }
-  .shape-1, .shape-2, .shape-3 {
-    filter: blur(60px);
-  }
-  .glass-content {
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    height: 100vh;
+    overflow-y: auto;
   }
   .text-center-sm {
-    text-align: center;
+    text-align: left;
   }
 }
 </style>
