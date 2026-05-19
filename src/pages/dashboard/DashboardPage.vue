@@ -1,15 +1,9 @@
 <template>
   <q-page class="q-pa-lg dashboard-page">
-    <!-- Bienvenida y Header -->
-    <div class="row items-center q-mb-xl">
-      <div class="col">
-        <div class="text-h4 text-weight-bolder text-primary q-mb-xs">
-          {{ saludo }}, {{ auth.usuario?.username }}!
-        </div>
-        <div class="text-subtitle2 text-grey-7">Monitor de operaciones para {{ resumen?.festividad }} · {{ fechaActual }}</div>
-      </div>
-      <div class="col-auto row q-gutter-sm">
-        <div class="festiv-chip-wrap q-pa-xs rounded-borders row items-center">
+    <!-- Header Simplificado (Solo selector de festividad y refresco) -->
+    <div class="row items-center justify-between q-col-gutter-sm q-mb-lg">
+      <div class="col-12 col-sm-grow">
+        <div class="festiv-chip-wrap q-pa-xs rounded-borders row items-center no-wrap">
           <q-btn
             v-for="fest in (festividades.festividades as any[])"
             :key="fest.id_festividad"
@@ -17,12 +11,15 @@
             :color="festividadActiva === fest.id_festividad ? 'primary' : 'grey-7'"
             :class="festividadActiva === fest.id_festividad ? 'bg-blue-1 text-weight-bold px-md' : 'px-sm'"
             rounded no-caps
+            style="flex-shrink: 0;"
             @click="seleccionarFestividad(fest.id_festividad)"
           >
             {{ fest.nombre }}
           </q-btn>
         </div>
-        <q-btn unelevated color="primary" icon="refresh" @click="cargarResumen" :loading="cargando" />
+      </div>
+      <div class="col-12 col-sm-auto row justify-end">
+        <q-btn unelevated color="primary" icon="refresh" class="full-width-xs" @click="cargarResumen" :loading="cargando" />
       </div>
     </div>
 
@@ -239,16 +236,6 @@ const chartType = ref<'donut' | 'bar'>('donut')
 
 const colors = ['#1976D2', '#26A69A', '#F2C037', '#9C27B0', '#E91E63', '#00BCD4']
 
-const saludo = computed(() => {
-  const h = new Date().getHours()
-  if (h < 12) return '¡Buen día'
-  if (h < 19) return '¡Buenas tardes'
-  return '¡Buenas noches'
-})
-
-const fechaActual = computed(() => {
-  return new Intl.DateTimeFormat('es-BO', { dateStyle: 'full' }).format(new Date())
-})
 
 const statsCards = computed(() => {
   if (!resumen.value) return []
@@ -368,6 +355,18 @@ function getEficienciaColor(e: number) {
   background: #fff;
   border: 1px solid rgba(79,39,137,0.08);
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+.festiv-chip-wrap::-webkit-scrollbar {
+  display: none;
+}
+.festiv-chip-wrap {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 .canal-card {
   background: #f5f3fa;
@@ -398,4 +397,9 @@ function getEficienciaColor(e: number) {
 
 .px-md { padding-left: 16px; padding-right: 16px; }
 .px-sm { padding-left: 8px; padding-right: 8px; }
+@media (max-width: 599px) {
+  .full-width-xs {
+    width: 100%;
+  }
+}
 </style>

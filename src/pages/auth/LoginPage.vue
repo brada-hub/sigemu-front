@@ -1,5 +1,5 @@
 <template>
-  <q-page class="login-layout window-height window-width row overflow-hidden">
+  <q-page class="login-layout row">
     
     <!-- LADO IZQUIERDO: Branding Animado Espectacular -->
     <div class="col-12 col-md-6 flex flex-center branding-panel relative-position overflow-hidden">
