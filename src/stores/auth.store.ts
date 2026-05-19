@@ -5,8 +5,9 @@ import { authApi } from 'src/api/auth.api'
 interface Usuario {
   id_user: number
   username: string
-  rol: string
+  rol: string | Record<string, any>
   activo: boolean
+  permisos?: string[]
 }
 
 export const useAuthStore = defineStore('auth', () => {
@@ -23,10 +24,16 @@ export const useAuthStore = defineStore('auth', () => {
     return usuario.value.rol.toLowerCase()
   })
 
-  const esAdmin         = computed(() => rol.value === 'admin')
-  const esTesorero      = computed(() => rol.value === 'tesorero')
-  const puedeVerPagos   = computed(() => ['admin', 'tesorero'].includes(rol.value ?? ''))
-  const puedeInscribir  = computed(() => ['admin', 'secretario'].includes(rol.value ?? ''))
+  const tienePermiso = (slug: string): boolean => {
+    if (!usuario.value) return false
+    if (rol.value === 'admin') return true
+    return usuario.value.permisos?.includes(slug) ?? false
+  }
+
+  const esAdmin         = computed(() => rol.value === 'admin' || tienePermiso('usuarios.gestionar') || tienePermiso('roles.asignar'))
+  const esTesorero      = computed(() => rol.value === 'tesorero' || tienePermiso('pagos.registrar'))
+  const puedeVerPagos   = computed(() => esAdmin.value || esTesorero.value || tienePermiso('pagos.ver') || tienePermiso('reportes.ver'))
+  const puedeInscribir  = computed(() => esAdmin.value || rol.value === 'secretario' || tienePermiso('inscripciones.crear'))
 
   async function login(credenciales: Record<string, string>) {
     cargando.value = true
@@ -55,7 +62,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     usuario, token, cargando,
-    estaAutenticado, rol, esAdmin, esTesorero, puedeVerPagos, puedeInscribir,
+    estaAutenticado, rol, esAdmin, esTesorero, puedeVerPagos, puedeInscribir, tienePermiso,
     login, logout, cargarUsuario,
   }
 })

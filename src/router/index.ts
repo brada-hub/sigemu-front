@@ -83,10 +83,19 @@ export default defineRouter(function () {
       return { name: 'dashboard' }
     }
 
-    // Verificar rol si la ruta lo requiere
+    // Verificar rol/permisos si la ruta lo requiere
     const roles = to.meta.roles as string[] | undefined
-    if (roles && !roles.includes(auth.rol ?? '')) {
-      return { name: 'dashboard' }
+    if (roles) {
+      const uRol = auth.rol
+      let tieneAcceso = false
+
+      if (roles.includes('admin') && auth.esAdmin) tieneAcceso = true
+      if (roles.includes('tesorero') && auth.esTesorero) tieneAcceso = true
+      if (roles.includes('secretario') && (uRol === 'secretario' || auth.puedeInscribir)) tieneAcceso = true
+
+      if (!tieneAcceso) {
+        return { name: 'dashboard' }
+      }
     }
 
     return true
