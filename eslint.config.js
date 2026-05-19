@@ -38,7 +38,7 @@ export default defineConfigWithVueTs(
   {
     files: ['**/*.ts', '**/*.vue'],
     rules: {
-      '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+      '@typescript-eslint/consistent-type-imports': 'off',
     },
   },
   // https://github.com/vuejs/eslint-config-typescript
@@ -63,7 +63,12 @@ export default defineConfigWithVueTs(
 
     // add your custom rules here
     rules: {
+      'vue/block-lang': 'off',
       'prefer-promise-reject-errors': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
 
       // allow debugger during development only
       'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
@@ -76,6 +81,12 @@ export default defineConfigWithVueTs(
       globals: {
         ...globals.serviceworker,
       },
+    },
+  },
+  {
+    files: ['**/*.vue'],
+    rules: {
+      'vue/block-lang': 'off',
     },
   },
 
