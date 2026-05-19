@@ -14,10 +14,19 @@ const client = axios.create({
   headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
 })
 
-// Request: inyectar token Sanctum en cada request
+// Request: inyectar token Sanctum y realizar method spoofing para evitar bloqueos de hostings
 client.interceptors.request.use((config) => {
   const token = localStorage.getItem('auth_token')
   if (token) config.headers.Authorization = `Bearer ${token}`
+
+  // Convertir PUT/PATCH/DELETE a POST con parámetro _method
+  const method = config.method?.toLowerCase()
+  if (method === 'put' || method === 'patch' || method === 'delete') {
+    config.method = 'post'
+    const separator = config.url?.includes('?') ? '&' : '?'
+    config.url = `${config.url}${separator}_method=${method.toUpperCase()}`
+  }
+
   return config
 })
 

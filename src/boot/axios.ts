@@ -32,6 +32,20 @@ const api = axios.create({
   },
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token')
+  if (token) config.headers.Authorization = `Bearer ${token}`
+
+  const method = config.method?.toLowerCase()
+  if (method === 'put' || method === 'patch' || method === 'delete') {
+    config.method = 'post'
+    const separator = config.url?.includes('?') ? '&' : '?'
+    config.url = `${config.url}${separator}_method=${method.toUpperCase()}`
+  }
+
+  return config
+});
+
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
 
