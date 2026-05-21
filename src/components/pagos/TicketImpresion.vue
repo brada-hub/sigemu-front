@@ -1,53 +1,116 @@
 <template>
   <div class="ticket-impresion" id="impresion-ticket">
-    <div class="ticket-container">
-      <div class="header row items-center">
-        <div class="col-auto logo-container">
-          <img src="~assets/sigemu.png" alt="Logo" class="logo" />
+    <!-- COPIA 1: ORIGINAL -->
+    <div class="ticket-wrapper">
+      <div class="ticket-container">
+        <div class="header row items-center">
+          <div class="col-auto logo-container">
+            <img src="~assets/sigemu.png" alt="Logo" class="logo" />
+          </div>
+          <div class="col text-center title-container">
+            <h2 class="ticket-title">TICKET DE MORENADA UNITEPC</h2>
+            <div class="ticket-subtitle">COMPROBANTE DE PAGO N° {{ pago?.nro_comprobante || 'S/N' }} - ORIGINAL</div>
+          </div>
         </div>
-        <div class="col text-center title-container">
-          <h2 class="ticket-title">TICKET DE MORENADA UNITEPC</h2>
-          <div class="ticket-subtitle">COMPROBANTE DE PAGO N° {{ pago?.nro_comprobante || 'S/N' }}</div>
+
+        <table class="ticket-table">
+          <tbody>
+            <tr>
+              <th class="label">NOMBRE</th>
+              <td class="value">{{ fraternoNombre }}</td>
+            </tr>
+            <tr>
+              <th class="label">TIPO DE PAGO</th>
+              <td class="value">{{ pago?.metodo_pago }}</td>
+            </tr>
+            <tr>
+              <th class="label">NOMBRE DE BLOQUE</th>
+              <td class="value">{{ inscripcionActual?.bloque?.nombre || 'SIN BLOQUE' }}</td>
+            </tr>
+            <tr>
+              <th class="label">FRATERNO</th>
+              <td class="value">{{ inscripcionActual?.tipo_fraterno?.nombre || 'NUEVO' }}</td>
+            </tr>
+            <tr>
+              <th class="label">MONTO</th>
+              <td class="value">Bs. {{ pago?.monto_pagado }}</td>
+            </tr>
+            <tr>
+              <th class="label">SALDO</th>
+              <td class="value">Bs. {{ inscripcionActual?.saldo_pendiente }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="footer row justify-between items-end">
+          <div class="firma-box">
+            <div class="firma-line"></div>
+            <div class="firma-label">FIRMA / SELLO DE PAGO</div>
+          </div>
+          <div class="fecha-box text-right">
+            <div class="fecha-text">Fecha: {{ pago?.fecha_pago }} {{ pago?.hora_pago }}</div>
+            <div class="fecha-text">Recibido por: {{ usuarioRegistro }}</div>
+          </div>
         </div>
       </div>
+    </div>
 
-      <table class="ticket-table">
-        <tbody>
-          <tr>
-            <th class="label">NOMBRE</th>
-            <td class="value">{{ fraternoNombre }}</td>
-          </tr>
-          <tr>
-            <th class="label">TIPO DE PAGO</th>
-            <td class="value">{{ pago?.metodo_pago }}</td>
-          </tr>
-          <tr>
-            <th class="label">NOMBRE DE BLOQUE</th>
-            <td class="value">{{ inscripcion?.bloque?.nombre || 'SIN BLOQUE' }}</td>
-          </tr>
-          <tr>
-            <th class="label">FRATERNO</th>
-            <td class="value">{{ inscripcion?.tipo_fraterno?.nombre || 'NUEVO' }}</td>
-          </tr>
-          <tr>
-            <th class="label">MONTO</th>
-            <td class="value">Bs. {{ pago?.monto_pagado }}</td>
-          </tr>
-          <tr>
-            <th class="label">SALDO</th>
-            <td class="value">Bs. {{ inscripcion?.saldo_pendiente }}</td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- LÍNEA DE CORTE -->
+    <div class="cut-line">
+      <span>✂-----------------------------------------------------------------------------------------✂</span>
+    </div>
 
-      <div class="footer row justify-between items-end">
-        <div class="firma-box">
-          <div class="firma-line"></div>
-          <div class="firma-label">FIRMA / SELLO DE PAGO</div>
+    <!-- COPIA 2: COPIA -->
+    <div class="ticket-wrapper">
+      <div class="ticket-container">
+        <div class="header row items-center">
+          <div class="col-auto logo-container">
+            <img src="~assets/sigemu.png" alt="Logo" class="logo" />
+          </div>
+          <div class="col text-center title-container">
+            <h2 class="ticket-title">TICKET DE MORENADA UNITEPC</h2>
+            <div class="ticket-subtitle">COMPROBANTE DE PAGO N° {{ pago?.nro_comprobante || 'S/N' }} - COPIA</div>
+          </div>
         </div>
-        <div class="fecha-box text-right">
-          <div class="fecha-text">Fecha: {{ pago?.fecha_pago }} {{ pago?.hora_pago }}</div>
-          <div class="fecha-text">Recibido por: {{ usuarioRegistro }}</div>
+
+        <table class="ticket-table">
+          <tbody>
+            <tr>
+              <th class="label">NOMBRE</th>
+              <td class="value">{{ fraternoNombre }}</td>
+            </tr>
+            <tr>
+              <th class="label">TIPO DE PAGO</th>
+              <td class="value">{{ pago?.metodo_pago }}</td>
+            </tr>
+            <tr>
+              <th class="label">NOMBRE DE BLOQUE</th>
+              <td class="value">{{ inscripcionActual?.bloque?.nombre || 'SIN BLOQUE' }}</td>
+            </tr>
+            <tr>
+              <th class="label">FRATERNO</th>
+              <td class="value">{{ inscripcionActual?.tipo_fraterno?.nombre || 'NUEVO' }}</td>
+            </tr>
+            <tr>
+              <th class="label">MONTO</th>
+              <td class="value">Bs. {{ pago?.monto_pagado }}</td>
+            </tr>
+            <tr>
+              <th class="label">SALDO</th>
+              <td class="value">Bs. {{ inscripcionActual?.saldo_pendiente }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="footer row justify-between items-end">
+          <div class="firma-box">
+            <div class="firma-line"></div>
+            <div class="firma-label">FIRMA / SELLO DE PAGO</div>
+          </div>
+          <div class="fecha-box text-right">
+            <div class="fecha-text">Fecha: {{ pago?.fecha_pago }} {{ pago?.hora_pago }}</div>
+            <div class="fecha-text">Recibido por: {{ usuarioRegistro }}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -59,13 +122,14 @@ import { computed } from 'vue'
 
 const props = defineProps<{
   pago: any
+  inscripcionProp?: any
 }>()
 
-const inscripcion = computed(() => props.pago?.inscripcion)
+const inscripcionActual = computed(() => props.inscripcionProp || props.pago?.inscripcion)
 
 const fraternoNombre = computed(() => {
-  const persona = inscripcion.value?.persona
-  if (!persona) return ''
+  const persona = inscripcionActual.value?.persona
+  if (!persona) return 'SIN NOMBRE'
   return `${persona.nombres} ${persona.primer_apellido || ''} ${persona.segundo_apellido || ''}`.trim().toUpperCase()
 })
 
@@ -74,7 +138,7 @@ const usuarioRegistro = computed(() => {
   if (u?.persona?.nombres) {
     return `${u.persona.nombres} ${u.persona.primer_apellido || ''}`.trim()
   }
-  return u?.username || ''
+  return u?.username || 'Sistema'
 })
 </script>
 
@@ -103,12 +167,34 @@ const usuarioRegistro = computed(() => {
     left: 0;
     top: 0;
     width: 100%;
+    height: 100%;
   }
 
   @page {
     margin: 0;
-    size: auto;
+    size: letter portrait;
   }
+}
+
+.ticket-wrapper {
+  height: 48vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 10px 0;
+}
+
+.cut-line {
+  height: 4vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  color: #666;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 .ticket-container {
@@ -143,12 +229,13 @@ const usuarioRegistro = computed(() => {
   font-size: 14px;
   margin-top: 5px;
   text-align: center;
+  font-weight: bold;
 }
 
 .ticket-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .ticket-table th, .ticket-table td {
@@ -172,7 +259,7 @@ const usuarioRegistro = computed(() => {
 }
 
 .footer {
-  margin-top: 40px;
+  margin-top: 30px;
 }
 
 .firma-box {

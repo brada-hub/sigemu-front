@@ -132,11 +132,12 @@
       @guardado="cargarData"
     />
 
-    <TicketImpresion v-if="pagoAImprimir" :pago="pagoAImprimir" />
+    <TicketImpresion v-if="pagoAImprimir" :pago="pagoAImprimir" :inscripcion-prop="inscripcionObjeto" />
   </q-page>
 </template>
 
 <script setup lang="ts">
+
 import { ref, onMounted, computed, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { debounce } from 'quasar'
