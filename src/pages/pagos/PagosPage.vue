@@ -133,20 +133,18 @@
       :inscripcion="inscripcionObjeto"
       @guardado="cargarData"
     />
-
-    <TicketImpresion v-if="pagoAImprimir" :pago="pagoAImprimir" :inscripcion-prop="inscripcionObjeto" />
   </q-page>
 </template>
 
 <script setup lang="ts">
 
-import { ref, onMounted, computed, watch, nextTick } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { debounce } from 'quasar'
+import { debounce, useQuasar } from 'quasar'
 import { useAuthStore } from 'src/stores/auth.store'
 import { usePagosStore } from 'src/stores/pagos.store'
 import { useNotificacion } from 'src/composables/useNotificacion'
-import TicketImpresion from 'src/components/pagos/TicketImpresion.vue'
+import { pagosApi } from 'src/api/pagos.api'
 
 import { useInscripcionesStore } from 'src/stores/inscripciones.store'
 import { useBloquesStore } from 'src/stores/bloques.store'
@@ -161,6 +159,7 @@ const store = usePagosStore()
 const inscStore = useInscripcionesStore()
 const bloquesStore = useBloquesStore()
 const { confirmar } = useNotificacion()
+const $q = useQuasar()
 
 const dialogAbierto = ref(false)
 
@@ -227,16 +226,27 @@ async function confirmarEliminar(pago: Record<string, any>) {
   }
 }
 
-const pagoAImprimir = ref<any>(null)
-
 async function imprimirRecibo(pago: any) {
-  // Wait for the component to render
-  pagoAImprimir.value = pago
-  await nextTick()
-  setTimeout(() => {
-    window.print()
-    pagoAImprimir.value = null // hide it again after printing to prevent layout issues
-  }, 300)
+  const idIns = pago.inscripcion_id || inscripcionId.value
+  if (!idIns) return
+
+  $q.loading.show({
+    message: 'Generando recibo PDF, por favor espere...',
+    boxClass: 'bg-grey-2 text-grey-9',
+    spinnerColor: 'primary'
+  })
+
+  try {
+    const response = await pagosApi.ticket(idIns, pago.id_pagos)
+    const blob = new Blob([response.data], { type: 'application/pdf' })
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank')
+  } catch (e) {
+    console.error(e)
+    $q.notify({ message: 'Error al generar el ticket PDF', color: 'negative', icon: 'warning', position: 'top' })
+  } finally {
+    $q.loading.hide()
+  }
 }
 
 function onRequest({ pagination }: { pagination: any }) {

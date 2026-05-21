@@ -136,8 +136,15 @@ async function guardar() {
     $q.notify({ message: 'Pago registrado con éxito', color: 'positive', icon: 'check' })
     emit('guardado')
     actualizarValor(false)
-  } catch (e) {
+  } catch (e: any) {
     console.error(e)
+    const mensaje = e.response?.data?.message || e.response?.data?.errors?.nro_comprobante?.[0] || 'Error al registrar el pago'
+    $q.notify({
+      message: mensaje,
+      color: 'negative',
+      icon: 'warning',
+      position: 'top'
+    })
   } finally {
     cargando.value = false
   }

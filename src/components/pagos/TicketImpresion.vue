@@ -174,12 +174,14 @@ const usuarioRegistro = computed(() => {
   }
 
   .ticket-impresion {
-    display: block;
+    display: block !important;
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
+    margin: 0;
+    padding: 0;
   }
 
   @page {
@@ -189,17 +191,19 @@ const usuarioRegistro = computed(() => {
 }
 
 .ticket-wrapper {
-  height: 48vh;
+  height: 125mm;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-  padding: 10px 0;
+  padding: 5mm 0;
+  page-break-inside: avoid;
+  break-inside: avoid;
 }
 
 .cut-line {
-  height: 4vh;
+  height: 15mm;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -210,27 +214,27 @@ const usuarioRegistro = computed(() => {
 }
 
 .ticket-container {
-  width: 100%;
-  max-width: 800px;
+  width: 90%;
+  max-width: 650px;
   margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #000;
+  padding: 15px;
+  border: 1.5px solid #000;
   box-sizing: border-box;
 }
 
 .header {
   border-bottom: 2px solid #000;
-  padding-bottom: 10px;
-  margin-bottom: 20px;
+  padding-bottom: 5px;
+  margin-bottom: 12px;
 }
 
 .logo {
-  width: 80px;
+  width: 65px;
   height: auto;
 }
 
 .ticket-title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   margin: 0;
   padding: 0;
@@ -238,8 +242,8 @@ const usuarioRegistro = computed(() => {
 }
 
 .ticket-subtitle {
-  font-size: 14px;
-  margin-top: 5px;
+  font-size: 13px;
+  margin-top: 3px;
   text-align: center;
   font-weight: bold;
 }
@@ -247,13 +251,13 @@ const usuarioRegistro = computed(() => {
 .ticket-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .ticket-table th, .ticket-table td {
   border: 1px solid #000;
-  padding: 8px 12px;
-  font-size: 14px;
+  padding: 6px 10px;
+  font-size: 13px;
 }
 
 .ticket-table th.label {
@@ -271,27 +275,27 @@ const usuarioRegistro = computed(() => {
 }
 
 .footer {
-  margin-top: 30px;
+  margin-top: 15px;
 }
 
 .firma-box {
-  width: 180px;
+  width: 160px;
   text-align: center;
 }
 
 .firma-line {
   border-bottom: 1px solid #000;
   margin-bottom: 5px;
-  height: 40px; /* Espacio para la firma */
+  height: 30px; /* Espacio para la firma */
 }
 
 .firma-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
 }
 
 .fecha-box {
-  font-size: 12px;
+  font-size: 11px;
 }
 .fecha-text {
   margin-bottom: 4px;
