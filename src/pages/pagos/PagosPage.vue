@@ -117,6 +117,8 @@
 
       <template #body-cell-acciones="props">
         <q-td :props="props" auto-width>
+          <q-btn flat round icon="print" color="primary" size="sm" title="Imprimir Recibo"
+            @click="imprimirRecibo(props.row)" />
           <q-btn flat round icon="delete" color="negative" size="sm" title="Eliminar"
             @click="confirmarEliminar(props.row)"
             v-if="auth.esAdmin" />
@@ -129,16 +131,20 @@
       :inscripcion="inscripcionObjeto"
       @guardado="cargarData"
     />
+
+    <TicketImpresion v-if="pagoAImprimir" :pago="pagoAImprimir" />
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { debounce } from 'quasar'
 import { useAuthStore } from 'src/stores/auth.store'
 import { usePagosStore } from 'src/stores/pagos.store'
 import { useNotificacion } from 'src/composables/useNotificacion'
+import TicketImpresion from 'src/components/pagos/TicketImpresion.vue'
+
 import { useInscripcionesStore } from 'src/stores/inscripciones.store'
 import { useBloquesStore } from 'src/stores/bloques.store'
 import { inscripcionesApi } from 'src/api/inscripciones.api'
@@ -216,6 +222,18 @@ async function confirmarEliminar(pago: Record<string, any>) {
     await store.eliminar(idIns, pago.id_pagos as number)
     cargarData()
   }
+}
+
+const pagoAImprimir = ref<any>(null)
+
+async function imprimirRecibo(pago: any) {
+  // Wait for the component to render
+  pagoAImprimir.value = pago
+  await nextTick()
+  setTimeout(() => {
+    window.print()
+    pagoAImprimir.value = null // hide it again after printing to prevent layout issues
+  }, 300)
 }
 
 function onRequest({ pagination }: { pagination: any }) {

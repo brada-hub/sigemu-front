@@ -47,8 +47,18 @@ export const useInscripcionesStore = defineStore('inscripciones', () => {
     return data.data || data
   }
 
+  async function retirar(id: number | string) {
+    try {
+      await inscripcionesApi.retirar(id)
+      notificar('Fraterno retirado correctamente', 'positive')
+    } catch (error: any) {
+      notificar(error.response?.data?.message || 'Error al retirar el fraterno', 'negative')
+      throw error
+    }
+  }
+
   return {
     inscripciones, paginacion, cargando, filtros,
-    cargar, inscribir
+    cargar, inscribir, retirar
   }
 })

@@ -87,6 +87,11 @@
             v-if="auth.puedeVerPagos">
             <q-tooltip>Ver Historial de Pagos</q-tooltip>
           </q-btn>
+          <q-btn flat round icon="person_remove" color="negative" size="sm"
+            @click="confirmarRetirar(props.row)"
+            v-if="auth.esAdmin || auth.tienePermiso('inscripciones.retirar')">
+            <q-tooltip>Retirar Fraterno</q-tooltip>
+          </q-btn>
         </q-td>
       </template>
     </q-table>
@@ -113,6 +118,7 @@ import { debounce } from 'quasar'
 import { useAuthStore } from 'src/stores/auth.store'
 import { useInscripcionesStore } from 'src/stores/inscripciones.store'
 import { useFestividadesStore } from 'src/stores/festividades.store'
+import { useNotificacion } from 'src/composables/useNotificacion'
 import InscripcionFormDialog from 'src/components/inscripciones/InscripcionFormDialog.vue'
 import PagoFormDialog from 'src/components/pagos/PagoFormDialog.vue'
 import type { QTableColumn } from 'quasar'
@@ -121,6 +127,7 @@ const router = useRouter()
 const auth = useAuthStore()
 const store = useInscripcionesStore()
 const festividadesStore = useFestividadesStore()
+const { confirmar } = useNotificacion()
 
 const dialogAbierto = ref(false)
 const festividadActiva = ref<number | null>(null)
@@ -162,6 +169,19 @@ const onSearch = debounce(() => {
 function abrirPago(item: any) {
   pagoDialog.item = item
   pagoDialog.abierto = true
+}
+
+async function confirmarRetirar(row: any) {
+  const nombre = `${row.persona?.nombres} ${row.persona?.primer_apellido || ''}`.trim()
+  const ok = await confirmar(`¿Está seguro de retirar a ${nombre} de esta festividad?`)
+  if (ok) {
+    try {
+      await store.retirar(row.id_inscripcion)
+      cargarData()
+    } catch (e) {
+      // Error is handled in store
+    }
+  }
 }
 
 function onRequest({ pagination }: { pagination: any }) {
