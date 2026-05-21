@@ -54,16 +54,7 @@
             />
           </div>
 
-          <div class="row q-col-gutter-sm">
-            <q-input 
-              class="col-12"
-              v-model="form.nro_comprobante" 
-              label="Nro. Comprobante" 
-              outlined dense 
-              input-style="text-transform: uppercase"
-              @update:model-value="(v: any) => form.nro_comprobante = String(v).toUpperCase()"
-            />
-          </div>
+
 
           <q-input 
             v-model="form.observaciones" 
