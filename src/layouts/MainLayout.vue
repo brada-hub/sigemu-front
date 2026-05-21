@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <!-- ═══ NAVBAR ═══ -->
-    <q-header elevated :class="isDark ? 'navbar--dark' : 'navbar--light'">
+    <q-header elevated class="print-hide" :class="isDark ? 'navbar--dark' : 'navbar--light'">
       <q-toolbar>
         <q-btn flat dense round icon="menu" :color="isDark ? 'grey-4' : 'white'" @click="toggleSidebar" />
 
@@ -42,7 +42,7 @@
     </q-header>
 
     <!-- ═══ SIDEBAR ═══ -->
-    <q-drawer v-model="sidebarVisible" show-if-above :breakpoint="768" :width="260">
+    <q-drawer v-model="sidebarVisible" show-if-above :breakpoint="768" :width="260" class="print-hide">
       <div class="column full-height" :style="isDark ? sidebarDarkBg : sidebarLightBg">
 
         <!-- Logo -->

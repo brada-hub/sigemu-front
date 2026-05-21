@@ -43,9 +43,15 @@
         </table>
 
         <div class="footer row justify-between items-end">
-          <div class="firma-box">
-            <div class="firma-line"></div>
-            <div class="firma-label">FIRMA / SELLO DE PAGO</div>
+          <div class="row q-gutter-xl">
+            <div class="firma-box">
+              <div class="firma-line"></div>
+              <div class="firma-label">ENTREGUÉ CONFORME</div>
+            </div>
+            <div class="firma-box">
+              <div class="firma-line"></div>
+              <div class="firma-label">RECIBÍ CONFORME<br>(FIRMA / SELLO)</div>
+            </div>
           </div>
           <div class="fecha-box text-right">
             <div class="fecha-text">Fecha: {{ pago?.fecha_pago }} {{ pago?.hora_pago }}</div>
@@ -103,9 +109,15 @@
         </table>
 
         <div class="footer row justify-between items-end">
-          <div class="firma-box">
-            <div class="firma-line"></div>
-            <div class="firma-label">FIRMA / SELLO DE PAGO</div>
+          <div class="row q-gutter-xl">
+            <div class="firma-box">
+              <div class="firma-line"></div>
+              <div class="firma-label">ENTREGUÉ CONFORME</div>
+            </div>
+            <div class="firma-box">
+              <div class="firma-line"></div>
+              <div class="firma-label">RECIBÍ CONFORME<br>(FIRMA / SELLO)</div>
+            </div>
           </div>
           <div class="fecha-box text-right">
             <div class="fecha-text">Fecha: {{ pago?.fecha_pago }} {{ pago?.hora_pago }}</div>
@@ -263,7 +275,7 @@ const usuarioRegistro = computed(() => {
 }
 
 .firma-box {
-  width: 250px;
+  width: 180px;
   text-align: center;
 }
 

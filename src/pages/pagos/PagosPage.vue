@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <div class="row items-center q-mb-md">
+    <div class="row items-center q-mb-md print-hide">
       <q-btn flat round icon="arrow_back" color="primary" class="q-mr-sm" @click="router.push('/inscripciones')" v-if="inscripcionId" />
       <div class="col">
         <p class="text-h6 q-mb-none">{{ inscripcionId ? 'Historial de Pago' : 'Libro de Caja (Pagos Globales)' }}</p>
@@ -21,7 +21,7 @@
     </div>
 
     <!-- Filtros Globales (Solo si no es vista de fraterno específico) -->
-    <q-card flat bordered class="q-mb-lg bg-grey-1" v-if="!inscripcionId">
+    <q-card flat bordered class="q-mb-lg bg-grey-1 print-hide" v-if="!inscripcionId">
       <q-card-section>
         <div class="row q-col-gutter-md items-center">
           <div class="col-12 col-sm-3">
@@ -71,7 +71,7 @@
     </q-card>
 
     <!-- Información de la Inscripción (Solo si hay ID) -->
-    <q-card flat bordered class="q-mb-md bg-blue-1" v-if="inscripcionObjeto">
+    <q-card flat bordered class="q-mb-md bg-blue-1 print-hide" v-if="inscripcionObjeto">
       <q-card-section class="row items-center">
         <q-icon name="person" size="md" color="primary" class="q-mr-md" />
         <div>
@@ -85,6 +85,7 @@
 
     <!-- Tabla de Pagos -->
     <q-table
+      class="print-hide"
       :rows="store.pagos"
       :columns="(columnas as QTableColumn[])"
       :loading="store.cargando"
@@ -127,6 +128,7 @@
     </q-table>
 
     <PagoFormDialog
+      class="print-hide"
       v-model="dialogAbierto"
       :inscripcion="inscripcionObjeto"
       @guardado="cargarData"
