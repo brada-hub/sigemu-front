@@ -7,7 +7,7 @@
       </div>
       <q-btn
         unelevated color="primary" icon="person_add" label="Inscribir"
-        @click="dialogAbierto = true"
+        @click="abrirInscripcion"
         v-if="festividadActiva && auth.puedeInscribir"
       />
     </div>
@@ -87,6 +87,11 @@
             v-if="auth.puedeVerPagos">
             <q-tooltip>Ver Historial de Pagos</q-tooltip>
           </q-btn>
+          <q-btn flat round icon="edit" color="warning" size="sm"
+            @click="abrirEdicion(props.row)"
+            v-if="auth.esAdmin || auth.tienePermiso('inscripciones.editar')">
+            <q-tooltip>Editar Inscripción</q-tooltip>
+          </q-btn>
           <q-btn flat round icon="person_remove" color="negative" size="sm"
             @click="confirmarRetirar(props.row)"
             v-if="auth.esAdmin || auth.tienePermiso('inscripciones.retirar')">
@@ -100,6 +105,7 @@
       v-if="festividadActiva"
       v-model="dialogAbierto"
       :festividad-id="festividadActiva"
+      :inscripcion-a-editar="inscripcionEditando"
       @guardado="cargarData"
     />
 
@@ -131,6 +137,7 @@ const { confirmar } = useNotificacion()
 
 const dialogAbierto = ref(false)
 const festividadActiva = ref<number | null>(null)
+const inscripcionEditando = ref<Record<string, any> | null>(null)
 
 const pagoDialog = reactive({
   abierto: false,
@@ -169,6 +176,16 @@ const onSearch = debounce(() => {
 function abrirPago(item: any) {
   pagoDialog.item = item
   pagoDialog.abierto = true
+}
+
+function abrirInscripcion() {
+  inscripcionEditando.value = null
+  dialogAbierto.value = true
+}
+
+function abrirEdicion(item: any) {
+  inscripcionEditando.value = item
+  dialogAbierto.value = true
 }
 
 async function confirmarRetirar(row: any) {

@@ -56,9 +56,19 @@ export const useInscripcionesStore = defineStore('inscripciones', () => {
       throw error
     }
   }
+  async function actualizarInscripcion(id: number | string, datos: Record<string, unknown>) {
+    cargando.value = true
+    try {
+      const { data } = await inscripcionesApi.actualizar(id, datos)
+      notificar('Inscripción actualizada correctamente', 'positive')
+      return data.data || data
+    } finally {
+      cargando.value = false
+    }
+  }
 
   return {
     inscripciones, paginacion, cargando, filtros,
-    cargar, inscribir, retirar
+    cargar, inscribir, retirar, actualizarInscripcion
   }
 })

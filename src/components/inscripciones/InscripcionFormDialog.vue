@@ -2,7 +2,7 @@
   <q-dialog :model-value="modelValue" @update:model-value="actualizarValor" persistent>
     <q-card style="width: 500px; border-radius: 12px">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6 text-weight-bold">Inscribir Fraterno</div>
+        <div class="text-h6 text-weight-bold">{{ modoEdicion ? 'Editar Inscripción' : 'Inscribir Fraterno' }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -18,6 +18,8 @@
             label="Buscar Fraterno *"
             outlined dense
             use-input
+            :readonly="modoEdicion"
+            :hint="modoEdicion ? 'El fraterno no se puede cambiar en modo edición' : ''"
             @filter="filtrarPersonas"
             :rules="[(v: unknown) => !!v || 'Seleccione una persona']"
           />
@@ -85,7 +87,7 @@
 
           <div class="row justify-end q-mt-lg q-gutter-sm">
             <q-btn flat label="Cancelar" color="grey-7" v-close-popup />
-            <q-btn type="submit" unelevated color="primary" icon="person_add" label="Inscribir" :loading="cargando" />
+            <q-btn type="submit" unelevated color="primary" :icon="modoEdicion ? 'save' : 'person_add'" :label="modoEdicion ? 'Guardar Cambios' : 'Inscribir'" :loading="cargando" />
           </div>
         </q-form>
       </q-card-section>
@@ -102,12 +104,15 @@ import client from 'src/api/client'
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
   festividadId: { type: Number, required: true },
+  inscripcionAEditar: { type: Object as () => Record<string, any> | null, default: null }
 })
 
 const emit = defineEmits<{
   'update:modelValue': [val: boolean]
   guardado: []
 }>()
+
+const modoEdicion = computed(() => !!props.inscripcionAEditar)
 
 const inscStore = useInscripcionesStore()
 const persStore = usePersonasStore()
@@ -198,6 +203,30 @@ function filtrarPersonas(val: string, update: (fn: () => void) => void) {
   })
 }
 
+watch(() => props.modelValue, (isOpen) => {
+  if (isOpen) {
+    if (modoEdicion.value && props.inscripcionAEditar) {
+      const inc = props.inscripcionAEditar
+      // Asegurar que la persona exista en la lista (si viene paginada, la agregamos manualmente al select para que se vea su nombre)
+      if (inc.persona && !personasOpciones.value.some((p: any) => p.id_persona === inc.persona.id_persona)) {
+        personasOpciones.value.push(inc.persona)
+      }
+      form.persona_id = inc.persona_id
+      form.id_tipo_fraterno = inc.id_tipo_fraterno
+      form.id_bloque = inc.id_bloque
+      // Le damos un pequeño delay para que las categorias se filtren automáticamente por el watcher de tipo_fraterno, y luego seteamos la original
+      setTimeout(() => {
+        form.categoria_costo_id = inc.categoria_costo_id
+      }, 100)
+    } else {
+      form.persona_id = null
+      form.id_tipo_fraterno = null
+      form.id_bloque = null
+      form.categoria_costo_id = null
+    }
+  }
+})
+
 function actualizarValor(val: boolean) {
   emit('update:modelValue', val)
 }
@@ -205,13 +234,19 @@ function actualizarValor(val: boolean) {
 async function guardar() {
   cargando.value = true
   try {
-    await inscStore.inscribir(props.festividadId, {
+    const payload = {
       persona_id: form.persona_id,
       id_tipo_fraterno: form.id_tipo_fraterno,
       id_bloque: form.id_bloque,
       categoria_costo_id: form.categoria_costo_id,
       monto_asignado: categoriaSeleccionada.value?.monto_total || 0,
-    })
+    }
+
+    if (modoEdicion.value && props.inscripcionAEditar) {
+      await inscStore.actualizarInscripcion(props.inscripcionAEditar.id_inscripcion, payload)
+    } else {
+      await inscStore.inscribir(props.festividadId, payload)
+    }
     emit('guardado')
     actualizarValor(false)
   } finally {
