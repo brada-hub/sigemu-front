@@ -203,20 +203,24 @@ function filtrarPersonas(val: string, update: (fn: () => void) => void) {
   })
 }
 
-watch(() => props.modelValue, (isOpen) => {
+watch([() => props.modelValue, () => props.inscripcionAEditar], ([isOpen, inc]) => {
   if (isOpen) {
-    if (modoEdicion.value && props.inscripcionAEditar) {
-      const inc = props.inscripcionAEditar
+    if (modoEdicion.value && inc) {
       // Asegurar que la persona exista en la lista (si viene paginada, la agregamos manualmente al select para que se vea su nombre)
-      if (inc.persona && !personasOpciones.value.some((p: any) => p.id_persona === inc.persona.id_persona)) {
-        personasOpciones.value.push(inc.persona)
+      if (inc.persona) {
+        if (!todasLasPersonas.some((p: any) => p.id_persona === inc.persona.id_persona)) {
+          todasLasPersonas.push(inc.persona)
+        }
+        if (!personasOpciones.value.some((p: any) => p.id_persona === inc.persona.id_persona)) {
+          personasOpciones.value.push(inc.persona)
+        }
       }
-      form.persona_id = inc.persona_id
-      form.id_tipo_fraterno = inc.id_tipo_fraterno
-      form.id_bloque = inc.id_bloque
+      form.persona_id = inc.persona?.id_persona || inc.persona_id || null
+      form.id_tipo_fraterno = inc.tipo_fraterno?.id_tipo_fraterno || inc.id_tipo_fraterno || null
+      form.id_bloque = inc.bloque?.id_bloque || inc.id_bloque || null
       // Le damos un pequeño delay para que las categorias se filtren automáticamente por el watcher de tipo_fraterno, y luego seteamos la original
       setTimeout(() => {
-        form.categoria_costo_id = inc.categoria_costo_id
+        form.categoria_costo_id = inc.categoria_costo?.id_categoria_costo || inc.categoria_costo_id || null
       }, 100)
     } else {
       form.persona_id = null
@@ -225,7 +229,7 @@ watch(() => props.modelValue, (isOpen) => {
       form.categoria_costo_id = null
     }
   }
-})
+}, { immediate: true })
 
 function actualizarValor(val: boolean) {
   emit('update:modelValue', val)
