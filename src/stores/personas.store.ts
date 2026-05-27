@@ -10,7 +10,7 @@ export const usePersonasStore = defineStore('personas', () => {
   const persona     = ref<Record<string, unknown> | null>(null)
   const paginacion  = ref({ page: 1, rowsPerPage: 15, rowsNumber: 0 })
   const cargando    = ref(false)
-  const filtros     = ref<{ buscar: string; id_sexo: number | null }>({ buscar: '', id_sexo: null })
+  const filtros     = ref<{ buscar: string; id_sexo: number | null; id_tipo_persona: number | null }>({ buscar: '', id_sexo: null, id_tipo_persona: null })
 
   async function cargar(opts: Record<string, unknown> = {}) {
     cargando.value = true

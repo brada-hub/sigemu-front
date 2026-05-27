@@ -34,6 +34,13 @@
                 <q-item-label>{{ (persona.sexo as Record<string, string>)?.sexo || 'No registrado' }}</q-item-label>
               </q-item-section>
             </q-item>
+            <q-item>
+              <q-item-section avatar><q-icon name="badge" color="primary" /></q-item-section>
+              <q-item-section>
+                <q-item-label caption>Tipo de Persona</q-item-label>
+                <q-item-label>{{ (persona.tipoPersona as Record<string, string>)?.nombre || 'No asignado' }}</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-list>
         </q-card>
       </div>

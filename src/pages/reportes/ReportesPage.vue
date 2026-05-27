@@ -44,6 +44,13 @@
               </q-select>
             </div>
             <div class="col-12 col-md-4">
+              <q-select v-model="filtrosDin.id_tipo_persona" :options="tiposPersonas"
+                option-value="id_tipo_persona" option-label="nombre" emit-value map-options clearable
+                label="Tipo de Persona" outlined dense>
+                <template #prepend><q-icon name="badge" color="primary" /></template>
+              </q-select>
+            </div>
+            <div class="col-12 col-md-4">
               <q-select v-model="filtrosDin.metodo_pago"
                 :options="['Efectivo', 'Transferencia', 'QR', 'Otro']" clearable
                 label="Método de Pago" outlined dense>
@@ -191,6 +198,7 @@ import { useQuasar, date } from 'quasar'
 import { useFestividadesStore } from 'src/stores/festividades.store'
 import { useBloquesStore } from 'src/stores/bloques.store'
 import { pagosApi } from 'src/api/pagos.api'
+import { tiposPersonasApi } from 'src/api/tiposPersonas.api'
 import client from 'src/api/client'
 import AppEmptyState from 'src/components/common/AppEmptyState.vue'
 import ExcelJS from 'exceljs'
@@ -209,6 +217,7 @@ const festividadesStore = useFestividadesStore()
 const bloquesStore = useBloquesStore()
 
 const tiposFraternos = ref<any[]>([])
+const tiposPersonas = ref<any[]>([])
 const usuarios = ref<any[]>([])
 const generando = ref(false)
 const yaBusco = ref(false)
@@ -218,6 +227,7 @@ const filtrosDin = ref({
   festividad_id: null as number | null,
   id_bloque: null as number | null,
   id_tipo_fraterno: null as number | null,
+  id_tipo_persona: null as number | null,
   metodo_pago: null as string | null,
   registrado_por_id: null as number | null
 })
@@ -273,11 +283,13 @@ watch(filtrosDin, () => {
 onMounted(async () => {
   await festividadesStore.cargar()
   await bloquesStore.cargar()
-  const [tf, us] = await Promise.all([
+  const [tf, tp, us] = await Promise.all([
     client.get('/tipos-fraternos'),
+    tiposPersonasApi.listar(),
     client.get('/usuarios?has_pagos=true')
   ])
   tiposFraternos.value = tf.data.data || tf.data
+  tiposPersonas.value = tp.data.data || tp.data
   usuarios.value = us.data.data || us.data
   if (festividadesStore.festividades.length > 0) {
     filtrosDin.value.festividad_id = festividadesStore.festividades[0]?.id_festividad as any

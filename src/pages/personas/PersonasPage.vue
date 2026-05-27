@@ -8,16 +8,34 @@
       <q-btn unelevated color="primary" icon="person_add" label="Nuevo" @click="abrirDialogo(null)" v-if="auth.esAdmin" />
     </div>
 
-    <div class="row q-mb-md">
-      <q-input
-        v-model="store.filtros.buscar"
-        placeholder="Buscar por nombre o CI..."
-        outlined dense clearable
-        style="min-width: 240px"
-        @update:model-value="() => store.cargar()"
-      >
-        <template #prepend><q-icon name="search" /></template>
-      </q-input>
+    <div class="row q-col-gutter-md q-mb-md items-center">
+      <div class="col-auto">
+        <q-input
+          v-model="store.filtros.buscar"
+          placeholder="Buscar por nombre o CI..."
+          outlined dense clearable
+          style="min-width: 240px"
+          @update:model-value="() => store.cargar()"
+        >
+          <template #prepend><q-icon name="search" /></template>
+        </q-input>
+      </div>
+      <div class="col-auto">
+        <q-select
+          v-model="store.filtros.id_tipo_persona"
+          :options="tiposPersonas"
+          option-value="id_tipo_persona"
+          option-label="nombre"
+          emit-value map-options
+          clearable
+          label="Tipo de Persona"
+          outlined dense
+          style="min-width: 200px"
+          @update:model-value="() => store.cargar()"
+        >
+          <template #prepend><q-icon name="badge" /></template>
+        </q-select>
+      </div>
     </div>
 
     <q-table
@@ -48,6 +66,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { tiposPersonasApi } from 'src/api/tiposPersonas.api'
 import { useRouter } from 'vue-router'
 import { usePersonasStore } from 'src/stores/personas.store'
 import { useAuthStore } from 'src/stores/auth.store'
@@ -62,6 +81,7 @@ const { confirmar } = useNotificacion()
 
 const dialogAbierto = ref(false)
 const personaSeleccionada = ref<Record<string, unknown> | null>(null)
+const tiposPersonas = ref<Record<string, unknown>[]>([])
 
 const columnas = [
   { 
@@ -73,11 +93,20 @@ const columnas = [
   },
   { name: 'ci', label: 'CI', field: 'ci', align: 'left' as const },
   { name: 'sexo', label: 'Sexo', field: (row: Record<string, unknown>) => (row.sexo as Record<string, unknown>)?.sexo, align: 'left' as const },
+  { name: 'tipo_persona', label: 'Tipo', field: (row: Record<string, unknown>) => (row.tipo_persona as Record<string, unknown>)?.nombre || 'Sin asignar', align: 'left' as const },
   { name: 'celular', label: 'Celular', field: 'celular', align: 'left' as const },
   { name: 'acciones', label: '', field: 'acciones', align: 'center' as const },
 ]
 
-onMounted(() => store.cargar())
+onMounted(async () => {
+  store.cargar()
+  try {
+    const { data } = await tiposPersonasApi.listar()
+    tiposPersonas.value = data
+  } catch (e) {
+    console.error('Error cargando tipos de persona', e)
+  }
+})
 
 function abrirDialogo(persona: Record<string, unknown> | null) {
   personaSeleccionada.value = persona

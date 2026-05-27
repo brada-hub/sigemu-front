@@ -99,6 +99,17 @@
             :rules="[(v: any) => !!v || 'El sexo es requerido']" 
           />
 
+          <q-select 
+            v-model="form.id_tipo_persona" 
+            :options="tiposPersonas" 
+            option-value="id_tipo_persona" 
+            option-label="nombre" 
+            emit-value map-options 
+            label="Tipo de Persona" 
+            outlined dense 
+            clearable
+          />
+
           <div class="row justify-end q-mt-lg q-gutter-sm">
             <q-btn flat label="Cancelar" color="grey-7" v-close-popup />
             <q-btn type="submit" unelevated color="primary" icon="save" label="Guardar" :loading="cargando" />
@@ -110,8 +121,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, computed } from 'vue'
+import { ref, reactive, watch, computed, onMounted } from 'vue'
 import { usePersonasStore } from 'src/stores/personas.store'
+import { tiposPersonasApi } from 'src/api/tiposPersonas.api'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -131,6 +143,8 @@ const sexos = ref([
   { id_sexo: 2, sexo: 'Femenino' }
 ])
 
+const tiposPersonas = ref<Record<string, unknown>[]>([])
+
 const form = reactive({
   nombres: '',
   primer_apellido: '',
@@ -139,9 +153,19 @@ const form = reactive({
   celular: '',
   correo_personal: '',
   id_sexo: null as number | null,
+  id_tipo_persona: null as number | null,
 })
 
 const esEdicion = computed(() => !!props.persona)
+
+onMounted(async () => {
+  try {
+    const { data } = await tiposPersonasApi.listar()
+    tiposPersonas.value = data
+  } catch (e) {
+    console.error('Error cargando tipos de personas', e)
+  }
+})
 
 watch(() => props.modelValue, (isOpen) => {
   if (isOpen && props.persona) {
@@ -153,8 +177,9 @@ watch(() => props.modelValue, (isOpen) => {
     form.celular = p.celular || ''
     form.correo_personal = p.correo_personal || ''
     form.id_sexo = p.id_sexo || null
+    form.id_tipo_persona = p.id_tipo_persona || null
   } else if (isOpen) {
-    Object.assign(form, { nombres: '', primer_apellido: '', segundo_apellido: '', ci: '', celular: '', correo_personal: '', id_sexo: null })
+    Object.assign(form, { nombres: '', primer_apellido: '', segundo_apellido: '', ci: '', celular: '', correo_personal: '', id_sexo: null, id_tipo_persona: null })
   }
 })
 
