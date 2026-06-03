@@ -31,6 +31,7 @@
         row-key="id_categoria_costo"
         flat bordered
         hide-pagination
+        :pagination="{ rowsPerPage: 0 }"
       >
         <template #body-cell-monto="props">
           <q-td :props="props">
