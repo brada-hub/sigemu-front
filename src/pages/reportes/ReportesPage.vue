@@ -124,6 +124,7 @@
                   <th>Fraterno</th>
                   <th>C.I.</th>
                   <th>Celular</th>
+                  <th>Tipo Persona</th>
                   <th>Bloque</th>
                   <th>Tipo</th>
                   <th>Recibo</th>
@@ -148,6 +149,8 @@
                     <td v-if="pi === 0" :rowspan="grupo.pagos.length">{{ grupo.ci || '—' }}</td>
                     <!-- Celular — merge -->
                     <td v-if="pi === 0" :rowspan="grupo.pagos.length">{{ grupo.celular || '—' }}</td>
+                    <!-- Tipo Persona — merge -->
+                    <td v-if="pi === 0" :rowspan="grupo.pagos.length">{{ grupo.tipoPersona }}</td>
                     <!-- Bloque — merge -->
                     <td v-if="pi === 0" :rowspan="grupo.pagos.length">{{ grupo.bloque }}</td>
                     <!-- Tipo — merge -->
@@ -177,7 +180,7 @@
               </tbody>
               <tfoot>
                 <tr>
-                  <td colspan="7" class="text-right text-weight-bold">TOTAL:</td>
+                  <td colspan="8" class="text-right text-weight-bold">TOTAL:</td>
                   <td class="text-right">
                     <span class="monto-badge monto-total">Bs. {{ totalMonto.toFixed(2) }}</span>
                   </td>
@@ -214,6 +217,7 @@ interface GrupoFraterno {
   fraterno: string
   ci: string
   celular: string
+  tipoPersona: string
   bloque: string
   tipo: string
   pagos: any[]
@@ -248,6 +252,7 @@ const filasAgrupadas = computed<GrupoFraterno[]>(() => {
       fraterno: `${ins.persona?.nombres || ''} ${ins.persona?.primer_apellido || ''} ${ins.persona?.segundo_apellido || ''}`.replace(/\s+/g, ' ').trim(),
       ci: ins.persona?.ci || '',
       celular: ins.persona?.celular || '',
+      tipoPersona: ins.persona?.tipo_persona?.nombre || 'Sin asignar',
       bloque: ins.bloque?.nombre || 'No asignado',
       tipo: ins.tipo_fraterno?.nombre || 'Antiguo',
       pagos: ins.pagos && ins.pagos.length > 0 ? ins.pagos : [{ monto_pagado: 0, _dummy: true, created_at: ins.inscrito_at || ins.created_at }]
@@ -354,11 +359,11 @@ async function exportarExcel() {
     right: { style: 'thin', color: { argb: 'FFD0D0D0' } }
   }
 
-  const headers = ['#', 'Fraterno', 'C.I.', 'Celular', 'Bloque', 'Tipo', 'Recibo', 'Monto Registrado', 'FECHA', 'HORA', 'Método', 'Recibido Por']
-  const colWidths = [5, 28, 12, 12, 18, 14, 15, 18, 16, 12, 14, 28]
+  const headers = ['#', 'Fraterno', 'C.I.', 'Celular', 'Tipo Persona', 'Bloque', 'Tipo', 'Recibo', 'Monto Registrado', 'FECHA', 'HORA', 'Método', 'Recibido Por']
+  const colWidths = [5, 28, 12, 12, 16, 18, 14, 15, 18, 16, 12, 14, 28]
 
   // ── Fila 1: Título institucional ──
-  ws.mergeCells('A1:L1')
+  ws.mergeCells('A1:M1')
   const titleCell = ws.getCell('A1')
   const festObj = festividadesStore.festividades.find((f: any) => f.id_festividad === filtrosDin.value.festividad_id) as any
   titleCell.value = `REPORTE DE PAGOS — ${festObj?.nombre || 'General'} — ${fechaHoy.value}`
@@ -375,7 +380,7 @@ async function exportarExcel() {
   headerRow.height = 24
   headerRow.eachCell((cell, colNum) => {
     cell.font = fontHeader
-    cell.alignment = { horizontal: colNum === 8 ? 'right' : 'center', vertical: 'middle' }
+    cell.alignment = { horizontal: colNum === 9 ? 'right' : 'center', vertical: 'middle' }
     cell.fill = { type: 'gradient', gradient: 'angle', degree: 135, stops: [
       { position: 0, color: { argb: `FF${purpleDark}` } },
       { position: 1, color: { argb: `FF${indigoDark}` } }
@@ -401,6 +406,7 @@ async function exportarExcel() {
         pi === 0 ? grupo.fraterno : '',
         pi === 0 ? grupo.ci : '',
         pi === 0 ? grupo.celular : '',
+        pi === 0 ? grupo.tipoPersona : '',
         pi === 0 ? grupo.bloque : '',
         pi === 0 ? grupo.tipo : '',
         pago._dummy ? '—' : (pago.nro_comprobante || 'S/N'),
@@ -413,17 +419,17 @@ async function exportarExcel() {
 
       const row = ws.addRow(rowData)
       row.eachCell({ includeEmpty: true }, (cell, colNum) => {
-        cell.font = colNum === 8 ? fontMonto : (colNum <= 6 && pi === 0 ? fontBold : fontNormal)
+        cell.font = colNum === 9 ? fontMonto : (colNum <= 7 && pi === 0 ? fontBold : fontNormal)
         cell.fill = fillStyle
         cell.border = borderThin
         cell.alignment = {
-          horizontal: colNum === 8 ? 'right' : (colNum === 1 ? 'center' : 'left'),
+          horizontal: colNum === 9 ? 'right' : (colNum === 1 ? 'center' : 'left'),
           vertical: 'middle',
-          wrapText: colNum === 12
+          wrapText: colNum === 13
         }
       })
       // Format monto as currency
-      row.getCell(8).numFmt = '"Bs." #,##0.00'
+      row.getCell(9).numFmt = '"Bs." #,##0.00'
       currentRow++
     })
 
@@ -434,13 +440,14 @@ async function exportarExcel() {
       ws.mergeCells(startRow, 2, endRow, 2) // Fraterno
       ws.mergeCells(startRow, 3, endRow, 3) // CI
       ws.mergeCells(startRow, 4, endRow, 4) // Celular
-      ws.mergeCells(startRow, 5, endRow, 5) // Bloque
-      ws.mergeCells(startRow, 6, endRow, 6) // Tipo
+      ws.mergeCells(startRow, 5, endRow, 5) // Tipo Persona
+      ws.mergeCells(startRow, 6, endRow, 6) // Bloque
+      ws.mergeCells(startRow, 7, endRow, 7) // Tipo
     }
   })
 
   // ── Fila TOTAL ──
-  const totalRowData = ['', '', '', '', '', '', 'TOTAL:', totalMonto.value, '', '', '', '']
+  const totalRowData = ['', '', '', '', '', '', '', 'TOTAL:', totalMonto.value, '', '', '', '']
   const tRow = ws.addRow(totalRowData)
   tRow.height = 28
   tRow.eachCell({ includeEmpty: true }, (cell, colNum) => {
@@ -450,9 +457,9 @@ async function exportarExcel() {
       { position: 1, color: { argb: `FF${tealLight}` } }
     ]}
     cell.border = borderThin
-    cell.alignment = { horizontal: colNum === 8 ? 'right' : (colNum === 7 ? 'right' : 'center'), vertical: 'middle' }
+    cell.alignment = { horizontal: colNum === 9 ? 'right' : (colNum === 8 ? 'right' : 'center'), vertical: 'middle' }
   })
-  tRow.getCell(8).numFmt = '"Bs." #,##0.00'
+  tRow.getCell(9).numFmt = '"Bs." #,##0.00'
 
   // ── Column widths ──
   colWidths.forEach((w, i) => { ws.getColumn(i + 1).width = w })
