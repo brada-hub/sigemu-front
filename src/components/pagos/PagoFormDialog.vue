@@ -94,10 +94,18 @@ const emit = defineEmits<{
 const $q = useQuasar()
 const cargando = ref(false)
 
+function getLocalDateString() {
+  const d = new Date()
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 const form = reactive({
   monto_pagado: 0,
   metodo_pago: 'Efectivo',
-  fecha_pago: new Date().toISOString().split('T')[0],
+  fecha_pago: getLocalDateString(),
   nro_comprobante: '',
   observaciones: '',
 })
@@ -107,7 +115,7 @@ watch(() => props.modelValue, (isOpen) => {
     Object.assign(form, {
       monto_pagado: props.inscripcion?.saldo_pendiente || 0,
       metodo_pago: 'Efectivo',
-      fecha_pago: new Date().toISOString().split('T')[0],
+      fecha_pago: getLocalDateString(),
       nro_comprobante: '',
       observaciones: '',
     })
@@ -129,7 +137,15 @@ async function guardar() {
     actualizarValor(false)
   } catch (e: any) {
     console.error(e)
-    const mensaje = e.response?.data?.message || e.response?.data?.errors?.nro_comprobante?.[0] || 'Error al registrar el pago'
+    let mensaje = 'Error al registrar el pago'
+    if (e.response?.data?.errors) {
+      const errores = Object.values(e.response.data.errors).flat()
+      if (errores.length > 0) {
+        mensaje = errores.join(' · ')
+      }
+    } else if (e.response?.data?.message) {
+      mensaje = e.response.data.message
+    }
     $q.notify({
       message: mensaje,
       color: 'negative',
